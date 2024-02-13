@@ -1,0 +1,151 @@
+<app-loading-spinner
+  *ngIf="loading"
+></app-loading-spinner>
+
+<div class="w-full flex flex-column align-content-center justify-content-start mb-4"
+  *ngIf="isCategoryVisible">
+  <p-selectButton
+    [options]="categories"
+    [(ngModel)]="selectedCategory"
+    optionLabel="name"
+    optionValue="id"
+    (click)="selectCategory()"
+  ></p-selectButton>
+  <div>
+    <button *ngIf="!isCategoryEmpty"
+      pButton pRipple
+      class="p-button-success mt-3 mr-2"
+      (click)="showAddModal()">
+      Добавить блюдо
+    </button>
+    <button
+      pButton pRipple
+      class="p-button-success mt-3 mr-2"
+      (click)="showAddCategoryModal()">
+      Добавить категорию
+    </button>
+    <button *ngIf="isCategoryDeleteButtonVisible"
+      pButton pRipple
+      class="p-button-danger mt-3"
+      (click)="deleteSelectedCategory()">
+      Удалить категорию
+    </button>
+  </div>
+</div>
+<p-toast></p-toast>
+
+<p-card
+  [header]='"Блюда " + this.project?.name'
+  subheader="{{project?.description}}"
+  [style]="{ height: '100%' }">
+
+  <div *ngIf="isCategoryEmpty || isFoodsEmpty" class="flex flex-column justify-content-center align-items-center">
+    <div class="text-3xl mb-2">Пусто</div>
+    <span *ngIf="isCategoryEmpty">Добавьте категорию</span>
+    <span *ngIf="isFoodsEmpty">Добавьте блюдо</span>
+  </div>
+
+  <div class="h-full w-full flex flex-wrap">
+    <div class="food-card m-3" *ngFor="let food of foods">
+      <p-card class="cursor-pointer p-0" [style]="{ width: '20rem' }" header="{{food.name}}">
+        <ng-template pTemplate="header">
+          <div class="food-image-wrapper food-image">
+            <img [src]="food.image ? food.image : 'assets/images/fastFoodBW.png'" alt="food">
+          </div>
+        </ng-template>
+        <div class="text-400 mb-2">Описание: {{food.description}}</div>
+        <div class="font-bold">Цена: {{food.price}} руб</div>
+        <div class="flex mt-3">
+
+          <p-button [text]="true" [raised]="true" class="mr-2" label="E" (click)="showEditModal(food)"></p-button>
+          <p-button [text]="true" [raised]="true" class="mr-2" severity="info" label="V" (click)="showMoreInfoModal(food)"></p-button>
+          <p-button [text]="true" [raised]="true" severity="danger" label="D" (click)="deleteFood(food.id)"></p-button>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</p-card>
+
+<p-dialog [header]="isFoodEditMode ? 'Редактировать блюдо' : 'Добавить блюдо'"
+          [(visible)]="displayModalVisible"
+          [modal]="true"
+          [draggable]="false"
+          [resizable]="false">
+  <form [formGroup]="formGroup">
+    <div class="flex flex-column gap-2 w-24rem mb-2">
+      <label for="foodName">Название блюда</label>
+      <input pInputText id="foodName" aria-describedby="projectName-help" formControlName="foodName" />
+    </div>
+    <div class="flex flex-column gap-2 w-24rem mb-3">
+      <label for="foodDescription">Описание</label>
+      <textarea id="foodDescription" rows="5" cols="40" pInputTextarea [autoResize]="true" formControlName="foodDescription"></textarea>
+    </div>
+    <div class="flex flex-column gap-2 w-24rem mb-2">
+      <label for="foodPrice">Цена</label>
+      <input pInputText id="foodPrice" aria-describedby="projectName-help" formControlName="foodPrice" />
+    </div>
+    <div class="flex flex-column gap-2 w-24rem mb-2">
+      <p-dropdown
+        appendTo="body"
+        [options]="categories"
+        optionLabel="name"
+        formControlName="foodCategory"
+        placeholder="Выбрать категорию">
+      </p-dropdown>
+    </div>
+    <div class="flex flex-column gap-2 w-24rem mb-2 upload-file-row">
+      <label class="input-file">
+        <input pButton type="file" name="file[]" accept="image/*" (change)="uploadFoodImage($event)"/>
+        <span>Загрузить изображение</span>
+      </label>
+      <img id="file-preview" [src]="uploadedFoodImage" />
+    </div>
+    <button type="submit" pButton (click)="saveFood()">Сохранить</button>
+  </form>
+</p-dialog>
+
+<p-dialog header="Добавить категорию"
+          [modal]="true"
+          [(visible)]="displayCategoryModalVisible"
+          [draggable]="false"
+          [resizable]="false">
+  <form [formGroup]="formGroupCategory">
+    <div class="flex flex-column gap-2 w-24rem mb-3">
+      <label for="categoryName">Название категории</label>
+      <input pInputText id="categoryName" aria-describedby="projectName-help" formControlName="categoryName" />
+    </div>
+    <button type="submit" pButton (click)="addCategory()">Сохранить</button>
+  </form>
+</p-dialog>
+
+<p-dialog header="Подробности"
+          [modal]="true"
+          [(visible)]="displayMoreInfoModalVisible"
+          [draggable]="false"
+          [resizable]="false">
+  <div class="flex">
+    <img src="assets/images/food.jpg" alt="food" class="w-24rem">
+    <ul class="m-0 ml-2 mb-2 p-0 list-none">
+      <li>Название: <span>{{selectedFood?.name}}</span></li>
+      <li>Описание: <span>{{selectedFood?.description}}</span></li>
+      <li>Дата создания: <span>{{selectedFood?.creationDate}}</span></li>
+      <li>Текущая цена: <span>{{selectedFood?.price}}</span></li>
+    </ul>
+  </div>
+  <p-table [value]="foodPrices" [tableStyle]="{ 'min-width': '50rem' }">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Дата изменения цены</th>
+        <th>Цена</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-foodPrice>
+      <tr>
+        <td>{{ foodPrice.creationDate }}</td>
+        <td>{{ foodPrice.price }}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-dialog>
+
+<p-confirmDialog></p-confirmDialog>

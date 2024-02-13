@@ -1,0 +1,46 @@
+version: '3.4'
+
+services:
+  kitchendb:
+    image: postgres
+    container_name: kitchen_postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=KitchenDb
+    ports:
+      - "5432:5432"
+    volumes:
+      - kitchendb_data:/var/lib/postgresql/data
+
+  kitchen:
+    image: kitchen
+    build:
+      context: .
+      dockerfile: Kitchen\Dockerfile
+    container_name: kitchen_api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "DatabaseSettings:ConnectionString=Server=kitchendb;Port=5432;Database=KitchenDb;User Id=postgres;Password=postgres;"
+    depends_on:
+      - kitchendb
+    ports:
+      - 8001:80
+
+  kitchenweb:
+    container_name: kitchen_web
+    image: kitchen_web
+    build:
+      context: .
+      dockerfile: Kitchen\ClientApp\Dockerfile
+    depends_on:
+       - kitchen
+    restart: always
+    environment:
+      - BASE_API_URL=http://localhost:8001/api
+    ports:
+      - 8002:80
+
+volumes:
+  kitchendb_data:

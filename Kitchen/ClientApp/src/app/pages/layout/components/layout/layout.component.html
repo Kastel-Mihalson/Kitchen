@@ -1,0 +1,40 @@
+<div class="layout-container">
+  <div class="layout-header">
+    <ul class="flex list-none m-0 ml-5 p-0 align-items-center">
+      <li class="mr-5">
+        <h1
+          (click)="selectedMenuItemIndex = undefined"
+          [routerLink]="['/welcome']">
+          КУХНЯ
+        </h1>
+      </li>
+      <li>
+        <h3
+          (click)="selectedMenuItemIndex = undefined"
+          [routerLink]="['/projects']">
+          Проекты
+        </h3>
+      </li>
+    </ul>
+    <button
+      pButton pRipple
+      class="p-button-danger p-button-text mr-3"
+      (click)="onClickLogout()"
+    >Выход</button>
+  </div>
+<!--  <div class="layout-sidebar">-->
+<!--    <ng-container *ngFor="let item of menuItems; let i = index">-->
+<!--      <div-->
+<!--        [routerLink]="['/',item.router]"-->
+<!--        class="menu-item"-->
+<!--        [ngClass]="selectedMenuItemIndex === i ? 'selected' : ''"-->
+<!--        (click)="selectedMenuItemIndex = i"-->
+<!--      >-->
+<!--        {{item.label}}-->
+<!--      </div>-->
+<!--    </ng-container>-->
+<!--  </div>-->
+  <div class="layout-content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

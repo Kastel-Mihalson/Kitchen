@@ -1,0 +1,43 @@
+.upload-file-row {
+  display: inline-block;
+
+  .input-file {
+    position: relative;
+    display: inline-block;
+
+    input {
+      position: absolute;
+      z-index: -1;
+    }
+
+    span {
+      position: relative;
+      display: inline-block;
+      background-color: #3b82f6;
+      color: #fefefe;
+      border-radius: 5px;
+      padding: 15px;
+      cursor: pointer;
+    }
+  }
+}
+
+.empty-food-list {
+
+}
+
+.food-image-wrapper {
+  width: 320px;
+  height: 290px;
+  border: 1px solid #fefefe;
+}
+.food-image {
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    color: white;
+  }
+}

@@ -1,0 +1,19 @@
+:host{
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  background: #00000059;
+  .circle{
+    background: white;
+    border-radius: 100%;
+    width: 7rem;
+    height: 7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

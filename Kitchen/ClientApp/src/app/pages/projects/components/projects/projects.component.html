@@ -1,0 +1,61 @@
+<app-loading-spinner
+  *ngIf="loading"
+></app-loading-spinner>
+
+<p-toast></p-toast>
+
+<p-card [style]="{ height: '100%'}">
+  <div class="flex align-items-center" [style]="{marginTop: '-20px'}">
+    <div class="mr-3">
+      <h2>Проекты</h2>
+    </div>
+    <button
+      pButton pRipple
+      class="p-button-success"
+      (click)="showModal()">
+      Добавить
+    </button>
+  </div>
+  <div class="h-full w-full flex flex-wrap justify-content-start gap-3">
+    <div class="project-card-container" *ngFor="let project of projects">
+      <p-card class="project-card cursor-pointer p-0" [style]="{ width: '20rem', height: '100%' }" header="{{project.name}}">
+        <ng-template pTemplate="header">
+          <img [src]="project.image ? project.image : 'assets/images/fastFoodBW2.png'" alt="food">
+        </ng-template>
+        <div class="project-description text-400">{{project.description}}</div>
+        <div class="flex mt-3">
+          <p-button [text]="true" [raised]="true" class="mr-2" label="Выбрать"
+                    [routerLink]="['/','dishs']"
+                    [queryParams]="{
+                      projectId: project.id,
+                      projectName: project.name,
+                      projectDescription: project.description
+                    }">
+          </p-button>
+          <p-button [text]="true" [raised]="true" severity="danger" label="Удалить" (click)="deleteProject(project.id)"></p-button>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</p-card>
+
+<p-dialog header="Добавить проект"
+          [(visible)]="displayModalVisible"
+          [modal]="true"
+          [draggable]="false"
+          [resizable]="false">
+  <form [formGroup]="formGroup">
+    <div class="flex flex-column gap-2 w-24rem mb-3">
+      <label for="projectName">Название проекта</label>
+      <input pInputText id="projectName" aria-describedby="projectName-help" formControlName="projectName" />
+    </div>
+    <div class="flex flex-column gap-2 w-24rem mb-3">
+      <label for="projectName">Описание</label>
+      <textarea rows="5" cols="40" pInputTextarea [autoResize]="true" formControlName="projectDescription"></textarea>
+    </div>
+
+    <button type="submit" pButton (click)="addProject()">Сохранить</button>
+  </form>
+</p-dialog>
+
+<p-confirmDialog></p-confirmDialog>
